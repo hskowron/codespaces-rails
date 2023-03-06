@@ -59,6 +59,11 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  pf_domain = ENV['GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN']
+  config.action_dispatch.default_headers = {
+    'X-Frame-Options' => "ALLOW-FROM #{pf_domain}"
+  }
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
@@ -67,5 +72,10 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
-  # config.hosts.clear
+
+  # Allow requests from our preview domain.
+  pf_host = "#{ENV['CODESPACE_NAME']}-3000.#{pf_domain}"
+  config.hosts << pf_host
+
+  config.action_cable.allowed_request_origins = ["https://#{pf_host}"]
 end
